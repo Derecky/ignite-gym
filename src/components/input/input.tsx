@@ -23,7 +23,7 @@ export function Input({ errorMessage = null, isInvalid, ...rest }: InputProps) {
         isInvalid={invalid}
         _invalid={{
           borderWidth: 1,
-          borderColor: "red.500"
+          borderColor: "red.500",
         }}
         fontSize={"md"}
         color={"white"}
@@ -37,7 +37,9 @@ export function Input({ errorMessage = null, isInvalid, ...rest }: InputProps) {
         {...rest}
       />
 
-      <FormControl.ErrorMessage>{errorMessage}</FormControl.ErrorMessage>
+      <FormControl.ErrorMessage _text={{ color: "red.500" }}>
+        {errorMessage}
+      </FormControl.ErrorMessage>
     </FormControl>
   );
 }

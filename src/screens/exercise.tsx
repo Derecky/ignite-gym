@@ -38,7 +38,12 @@ export function Exercise() {
           mb={8}
           alignItems="center"
         >
-          <Heading flexShrink={1} color="gray.100" fontSize="lg">
+          <Heading
+            flexShrink={1}
+            color="gray.100"
+            fontSize="lg"
+            fontFamily="heading"
+          >
             Puxada Frontal
           </Heading>
 
@@ -53,7 +58,7 @@ export function Exercise() {
       </VStack>
 
       <VStack p={8}>
-        <ScrollView contentContainerStyle={{ paddingBottom: 36}}>
+        <ScrollView contentContainerStyle={{ paddingBottom: 36 }}>
           <Image
             source={{
               uri: "https://alexandrebento.com.br/wp-content/uploads/2023/03/remada-unilateral-1024x683.jpg",
@@ -90,7 +95,6 @@ export function Exercise() {
 
             <Button title="Marcar como realizado" />
           </Box>
-
         </ScrollView>
       </VStack>
     </VStack>

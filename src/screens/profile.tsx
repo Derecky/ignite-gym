@@ -23,7 +23,7 @@ export function Profile() {
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [userPhoto, setUserPhoto] = useState("https://github.com/derecky.png");
 
-  const toast = useToast()
+  const toast = useToast();
 
   async function handleUserPhotoSelect() {
     setPhotoIsLoading(true);
@@ -51,7 +51,7 @@ export function Profile() {
           return toast.show({
             title: "Essa imagem é muito grande. Escolha uma de até 5MB.",
             placement: "top",
-            bgColor: "red.500"
+            bgColor: "red.500",
           });
         }
 
@@ -104,7 +104,7 @@ export function Profile() {
         </Center>
 
         <VStack px={10} mt={12} mb={9}>
-          <Heading color="gray.200" fontSize="md" mb={2}>
+          <Heading color="gray.200" fontSize="md" mb={2} fontFamily="heading">
             Alterar senha
           </Heading>
 

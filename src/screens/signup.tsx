@@ -97,8 +97,6 @@ export function SignUp() {
             )}
           />
 
-          <Text color="white">{errors.name?.message}</Text>
-
           <Controller
             name="email"
             control={control}
@@ -151,7 +149,7 @@ export function SignUp() {
         </Center>
 
         <Button
-          mt={24}
+          mt={12}
           title="Voltar para o login"
           variant="outline"
           onPress={handleGoBack}
