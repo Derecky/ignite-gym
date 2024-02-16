@@ -18,9 +18,11 @@ export function Home() {
     "Crucifixo quadril alto",
   ]);
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<AppNavigatorRoutesProps>();
 
-  const handleSelectExercise = () => {};
+  const handleOpenExerciseDetails = () => {
+    navigation.navigate("exercise")
+  };
 
   return (
     <VStack flex={1}>
@@ -45,6 +47,7 @@ export function Home() {
         }}
         my={10}
         maxH={10}
+        minH={10}
       />
 
       <VStack flex={1} px={8}>
@@ -62,7 +65,7 @@ export function Home() {
           data={exercises}
           keyExtractor={(item) => item}
           renderItem={({ item }) => (
-            <ExerciseCard onPress={handleSelectExercise} />
+            <ExerciseCard onPress={handleOpenExerciseDetails} />
           )}
           showsVerticalScrollIndicator={false}
           _contentContainerStyle={{ paddingBottom: 20 }}
