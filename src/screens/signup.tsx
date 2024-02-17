@@ -11,16 +11,16 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import axios from "axios";
 
 import { Input } from "@/components/input";
 import { Button } from "@/components/button";
 
 import BackgroundImage from "@/assets/background.png";
 import LogoSvg from "@/assets/logo.svg";
-import { Alert } from "react-native";
 import { api } from "@/services/api";
 import { AppError } from "@/utils/app-error";
+import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 type FormDataProps = {
   name: string;
@@ -54,6 +54,9 @@ const signupSchema = yup.object({
 });
 
 export function SignUp() {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { signIn } = useAuth();
   const {
     control,
     handleSubmit,
@@ -71,14 +74,15 @@ export function SignUp() {
 
   const handleSignUp = async ({ email, name, password }: FormDataProps) => {
     try {
-      const response = await api.post("/users", {
+      setIsLoading(true);
+      await api.post("/users", {
         name,
         email,
         password,
       });
-
-      console.log({ response: response.data });
+      await signIn(email, password);
     } catch (error) {
+      setIsLoading(false);
       const isAppError = error instanceof AppError;
       const title = isAppError
         ? error.message
@@ -176,6 +180,7 @@ export function SignUp() {
           <Button
             title="Criar e acessar"
             onPress={handleSubmit(handleSignUp)}
+            isLoading={isLoading}
           />
         </Center>
 
