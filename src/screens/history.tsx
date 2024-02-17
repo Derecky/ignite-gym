@@ -1,13 +1,43 @@
 import { HistoryCard } from "@/components/history-card";
 import { ScreenHeader } from "@/components/screen-header";
-import { Heading, VStack, SectionList, Text, Center } from "native-base";
-import { useState } from "react";
+import { HistoryByDayDTO } from "@/dtos/history-by-day-dto";
+import { api } from "@/services/api";
+import { AppError } from "@/utils/app-error";
+import { useFocusEffect } from "@react-navigation/native";
+import { Heading, VStack, SectionList, Text, useToast } from "native-base";
+import { useCallback, useEffect, useState } from "react";
 
 export function History() {
-  const [exercises, setExercises] = useState([
-    { title: "24/10/2023", data: ["puxada frontal", "remada unilateral"] },
-    { title: "23/10/2023", data: ["remada unilateral"] },
-  ]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [exercises, setExercises] = useState<HistoryByDayDTO[]>([]);
+
+  const toast = useToast();
+
+  const fetchHistory = async () => {
+    try {
+      setIsLoading(true);
+
+      const response = await api.get("history");
+
+      setExercises(response.data);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError
+        ? error.message
+        : "Não foi possível carregar os detalhes do exercício.";
+
+      toast.show({ title, placement: "top", bgColor: "danger.500" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchHistory();
+    }, [])
+  );
 
   return (
     <VStack flex={1}>
@@ -15,8 +45,8 @@ export function History() {
 
       <SectionList
         sections={exercises}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => <HistoryCard />}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <HistoryCard data={item}/>}
         renderSectionHeader={({ section }) => (
           <Heading
             color="gray.200"
