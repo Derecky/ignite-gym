@@ -6,16 +6,21 @@ import {
   ScrollView,
   Text,
   VStack,
+  useToast,
 } from "native-base";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import axios from "axios";
 
 import { Input } from "@/components/input";
 import { Button } from "@/components/button";
 
 import BackgroundImage from "@/assets/background.png";
 import LogoSvg from "@/assets/logo.svg";
+import { Alert } from "react-native";
+import { api } from "@/services/api";
+import { AppError } from "@/utils/app-error";
 
 type FormDataProps = {
   name: string;
@@ -33,9 +38,19 @@ const defaultValues: FormDataProps = {
 
 const signupSchema = yup.object({
   name: yup.string().required("Informe o nome."),
-  email: yup.string().required("Informe o e-mail.").email("E-mail inválido.").matches(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, "E-mail inválido."),
-  password: yup.string().required("Informe a senha.").min(6, "Sua senha deve ter pelo menos 6 dígitos."),
-  password_confirm: yup.string().required("confirme a senha.").oneOf([yup.ref("password")], "A confirmação da senha não confere")
+  email: yup
+    .string()
+    .required("Informe o e-mail.")
+    .email("E-mail inválido.")
+    .matches(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, "E-mail inválido."),
+  password: yup
+    .string()
+    .required("Informe a senha.")
+    .min(6, "Sua senha deve ter pelo menos 6 dígitos."),
+  password_confirm: yup
+    .string()
+    .required("confirme a senha.")
+    .oneOf([yup.ref("password")], "A confirmação da senha não confere"),
 });
 
 export function SignUp() {
@@ -48,13 +63,29 @@ export function SignUp() {
     resolver: yupResolver(signupSchema),
   });
   const navigation = useNavigation();
+  const toast = useToast();
 
   const handleGoBack = () => {
     navigation.goBack();
   };
 
-  const handleSignUp = (data: FormDataProps) => {
-    console.log({ data });
+  const handleSignUp = async ({ email, name, password }: FormDataProps) => {
+    try {
+      const response = await api.post("/users", {
+        name,
+        email,
+        password,
+      });
+
+      console.log({ response: response.data });
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError
+        ? error.message
+        : "Não foi possível criar a conta. Tente novamente mais tarde.";
+
+      toast.show({ title, placement: "top", bgColor: "danger.500" });
+    }
   };
 
   return (
