@@ -1,4 +1,12 @@
-import { Center, Heading, Image, ScrollView, Text, VStack } from "native-base";
+import {
+  Center,
+  Heading,
+  Image,
+  ScrollView,
+  Text,
+  VStack,
+  useToast,
+} from "native-base";
 import BackgroundImage from "@/assets/background.png";
 import LogoSvg from "@/assets/logo.svg";
 import { Input } from "@/components/input";
@@ -8,6 +16,9 @@ import { AuthNavigatorRoutesProps } from "@/routes/auth.routes";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useAuth } from "@/hooks/use-auth";
+import { AppError } from "@/utils/app-error";
+import { useState } from "react";
 
 type FormData = {
   email: string;
@@ -20,7 +31,11 @@ const signInSchema = yup.object({
 });
 
 export function SignIn() {
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
+  const { signIn } = useAuth();
+  const toast = useToast();
   const {
     control,
     handleSubmit,
@@ -33,7 +48,27 @@ export function SignIn() {
     navigation.navigate("signUp");
   };
 
-  const handleSignIn = (data: FormData) => { console.log(data)};
+  const handleSignIn = async (data: FormData) => {
+    try {
+      setIsLoading(true);
+      const { email, password } = data;
+
+      await signIn(email, password);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError
+        ? error.message
+        : "Não foi possível entrar. Tente novamente mais tarde.";
+
+      toast.show({
+        title,
+        placement: "top",
+        bgColor: "danger.500",
+      });
+      setIsLoading(false);
+    }
+  };
 
   return (
     <ScrollView
@@ -91,7 +126,11 @@ export function SignIn() {
             )}
           />
 
-          <Button title="Acessar" onPress={handleSubmit(handleSignIn)} />
+          <Button
+            title="Acessar"
+            onPress={handleSubmit(handleSignIn)}
+            isLoading={isLoading}
+          />
         </Center>
 
         <Center mt={24}>
