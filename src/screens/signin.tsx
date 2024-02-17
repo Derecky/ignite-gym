@@ -5,13 +5,35 @@ import { Input } from "@/components/input";
 import { Button } from "@/components/button";
 import { useNavigation } from "@react-navigation/native";
 import { AuthNavigatorRoutesProps } from "@/routes/auth.routes";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+type FormData = {
+  email: string;
+  password: string;
+};
+
+const signInSchema = yup.object({
+  email: yup.string().required("Informe seu email"),
+  password: yup.string().required("Informe uma senha."),
+});
 
 export function SignIn() {
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: yupResolver(signInSchema),
+  });
 
   const handleNewAccount = () => {
     navigation.navigate("signUp");
   };
+
+  const handleSignIn = (data: FormData) => { console.log(data)};
 
   return (
     <ScrollView
@@ -40,15 +62,36 @@ export function SignIn() {
             Acesse sua conta
           </Heading>
 
-          <Input
-            placeholder="E-mail"
-            keyboardType="email-address"
-            autoCapitalize="none"
+          <Controller
+            control={control}
+            name="email"
+            render={({ field }) => (
+              <Input
+                placeholder="E-mail"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                errorMessage={errors.email?.message}
+                onChangeText={field.onChange}
+                value={field.value}
+              />
+            )}
           />
 
-          <Input placeholder="Senha" secureTextEntry />
+          <Controller
+            control={control}
+            name="password"
+            render={({ field }) => (
+              <Input
+                placeholder="Senha"
+                errorMessage={errors.password?.message}
+                secureTextEntry
+                onChangeText={field.onChange}
+                value={field.value}
+              />
+            )}
+          />
 
-          <Button title="Acessar" />
+          <Button title="Acessar" onPress={handleSubmit(handleSignIn)} />
         </Center>
 
         <Center mt={24}>
